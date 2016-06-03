@@ -7,7 +7,7 @@ public class MonsterManager : MonoBehaviour
     private static MonsterManager _MangerInstance;
     public static MonsterManager Instance { get { return _MangerInstance; } }
 
-    // Ratio 0.0 ~ 1.0
+    // Ratio -0.5 ~ 0.5
     [SerializeField]
     private Vector2 _SpawnXPositionRatioRng;
     [SerializeField]
@@ -18,6 +18,7 @@ public class MonsterManager : MonoBehaviour
 
     private Vector2 _Res;
 
+    [System.Serializable]
     struct MonsterIndexRange
     {
         public int _IndexMin;
@@ -37,12 +38,13 @@ public class MonsterManager : MonoBehaviour
     {
         _MangerInstance = this;
         _MaxLevel = _LevelRangeList.Count - 1;
-        _Res = new Vector2(Screen.width, Screen.height);
+        _Res = new Vector2(720.0f, 1280.0f);
     }
 
     void Start()
     {
         _CurrentLevel = 0;
+        SpawnMonster();
     }
 
     public void LevelUp()
@@ -60,11 +62,11 @@ public class MonsterManager : MonoBehaviour
         MonsterIndexRange IndexRange = _LevelRangeList[SpawnLevel];
         int SpawnMonsterIndex = Random.Range(IndexRange._IndexMin, IndexRange._IndexMax);
 
-        //@TODO: Spawn Monster From Prefab List
         GameObject SpawnedMonster = Instantiate(_MonsterPrefabList[SpawnMonsterIndex]) as GameObject;
         if(SpawnedMonster != null)
         {
             SpawnedMonster.transform.position = new Vector3(SpawnXPosition, SpawnYPosition, _SpawnZPosition);
+            SpawnedMonster.SendMessage("SetToMove");
         }
         else if(Debug.isDebugBuild)
         {
