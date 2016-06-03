@@ -33,6 +33,7 @@ namespace ParkJunHo
                 }
                 else
                 {
+                    StopAllCoroutines();
                     mBackPressed = true;
                     //스프라이트 띄우기
                     mBackText.ShowText();
@@ -44,7 +45,7 @@ namespace ParkJunHo
 
         private IEnumerator RelieveBackButton()
         {
-            yield return new WaitForSeconds(0.7f);
+            yield return new WaitForSeconds(1.0f);
 
             mBackPressed = false;
         }
