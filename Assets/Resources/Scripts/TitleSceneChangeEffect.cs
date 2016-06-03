@@ -39,12 +39,14 @@ namespace ParkJunHo
 
                     if (PlayerPrefs.GetInt("IsPlayed", 0) != 0)
                     {
-                        PlayerPrefs.SetInt("IsPlayed", 1);
+                        //PlayerPrefs.SetInt("IsPlayed", 1);
                         changer.Level = 1;
+                        break;
                     }
                     else
                     {
                         changer.Level = 2;
+                        break;
                     }
                 }
 

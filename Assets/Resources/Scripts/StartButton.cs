@@ -14,7 +14,7 @@ namespace ParkJunHo
 
         public void OnClick()
         {
-
+            effect.StartEffect();
         }
     }
 }
