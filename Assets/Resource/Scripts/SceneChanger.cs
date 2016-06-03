@@ -11,7 +11,7 @@ namespace ParkJunHo
         // Use this for initialization
         void Start()
         {
-            SceneComponent.GetInstance().ScheduleLoadScene(Second, Level);
+            SceneComponent.Instance.ScheduleLoadScene(Second, Level);
         }
     }
 }
