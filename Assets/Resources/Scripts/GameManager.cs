@@ -58,7 +58,7 @@
                                 break;
 
                         case TouchPhase.Moved:
-                            _ProjectileAimAngle = Vector2.Angle(TouchEndPosition, _TouchBeganPosition);
+                            _ProjectileAimAngle = Vector2.Angle(_TouchBeganPosition, TouchEndPosition);
                             break;
 
                             case TouchPhase.Ended:
