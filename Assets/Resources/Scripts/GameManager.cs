@@ -21,9 +21,10 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private Object TestProjTilePrefab;
-
+    
     [SerializeField]
     private Vector2 _ProjectileSpawnPosition;
+    public Vector2 ProjectileSpawnPosition { get { return _ProjectileSpawnPosition; } }
 
     [SerializeField]
     private float _ProjectileRespawnDelay;
