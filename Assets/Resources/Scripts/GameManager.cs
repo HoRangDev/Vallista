@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,7 +21,8 @@ public class GameManager : MonoBehaviour
     private Vector2 _TouchBeganPosition;
 
     [SerializeField]
-    private Object TestProjTilePrefab;
+    private List<Object> _ProjectilePrefabList = new List<Object>();
+    private int _SelectedProjectileIndex;
 
     [SerializeField]
     private Vector2 _ProjectileSpawnPosition;
@@ -29,15 +31,27 @@ public class GameManager : MonoBehaviour
     private float _ProjectileRespawnDelay;
     private Projectile _CurrentProjectile;
 
+    [SerializeField]
+    private int _NeedScoreForLevelup;
+
     void Awake()
     {
         _ManagerInstance = this;
+        _SelectedProjectileIndex = Mathf.Clamp(PlayerPrefs.GetInt("SelectProjectileIndex", 0), 0, _ProjectilePrefabList.Count - 1);
         SpawnProjectile();
     }
 
     void Start()
     {
         StartCoroutine("DetectProjectileShoot");
+    }
+
+    void LateUpdate()
+    {
+        if(_CurrentScore - (_NeedScoreForLevelup * MonsterManager.Instance.CurrentLevel) > _NeedScoreForLevelup)
+        {
+            MonsterManager.Instance.LevelUp();
+        }
     }
 
     IEnumerator DetectProjectileShoot()
@@ -104,7 +118,7 @@ public class GameManager : MonoBehaviour
 
     void SpawnProjectile()
     {
-        GameObject ProjectileObj = Instantiate(TestProjTilePrefab) as GameObject;
+        GameObject ProjectileObj = Instantiate(_ProjectilePrefabList[_SelectedProjectileIndex]) as GameObject;
         if (ProjectileObj != null)
         {
             ProjectileObj.transform.position = _ProjectileSpawnPosition;

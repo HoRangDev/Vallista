@@ -13,6 +13,9 @@ public class Projectile : MonoBehaviour
     private AudioSource _AudioSource;
 
     [SerializeField]
+    private Sprite[] _LevelSpriteList = new Sprite[3];
+
+    [SerializeField]
     private List<AudioClip> _WallCollisionSoundEffects = new List<AudioClip>();
     private int _SoundEffectIndex = 0;
 
@@ -84,10 +87,9 @@ public class Projectile : MonoBehaviour
             _SoundEffectIndex = Mathf.Min(_SoundEffectIndex + 1, _WallCollisionSoundEffects.Count - 1);
             _AudioSource.clip = _WallCollisionSoundEffects[_SoundEffectIndex];
             _AudioSource.Play();
+            _SpriteRenderer.sprite = _LevelSpriteList[Mathf.Clamp(_SoundEffectIndex, 0, 2)];
             _DirectionVector.x *= -1.0f;
             _CurrentDamage = Mathf.Clamp(_CurrentDamage * 2, _StartDamage, _MaxDamage);
-
-
         }
     }
 

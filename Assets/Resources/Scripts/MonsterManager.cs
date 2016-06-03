@@ -12,7 +12,7 @@ public class MonsterManager : MonoBehaviour
     private Vector2 _SpawnXPositionRatioRng;
     [SerializeField]
     // Ratio
-    private float _SpawnYPositionRatio;
+    private Vector2 _SpawnYPositionRatioRng;
     [SerializeField]
     private float _SpawnZPosition;
 
@@ -30,9 +30,16 @@ public class MonsterManager : MonoBehaviour
 
     private int _MaxLevel;
     private int _CurrentLevel;
+    public int CurrentLevel { get { return _CurrentLevel; } }
 
     [SerializeField]
     List<Object> _MonsterPrefabList = new List<Object>();
+
+    [SerializeField]
+    private int _MaxSpawnNum;
+
+    [SerializeField]
+    private float _MaxMonsterSpawnTime;
 
     void Awake()
     {
@@ -54,23 +61,29 @@ public class MonsterManager : MonoBehaviour
 
     public void SpawnMonster()
     {
-        float SpawnXPosition = Random.Range(_SpawnXPositionRatioRng.x, _SpawnXPositionRatioRng.y);
-        SpawnXPosition *= _Res.x;
-        float SpawnYPosition = _SpawnYPositionRatio * _Res.y;
-
-        int SpawnLevel = Random.Range(0, _CurrentLevel);
-        MonsterIndexRange IndexRange = _LevelRangeList[SpawnLevel];
-        int SpawnMonsterIndex = Random.Range(IndexRange._IndexMin, IndexRange._IndexMax);
-
-        GameObject SpawnedMonster = Instantiate(_MonsterPrefabList[SpawnMonsterIndex]) as GameObject;
-        if(SpawnedMonster != null)
+        for (int Index = 0; Index < Random.Range(1, _MaxSpawnNum); ++Index)
         {
-            SpawnedMonster.transform.position = new Vector3(SpawnXPosition, SpawnYPosition, _SpawnZPosition);
-            SpawnedMonster.SendMessage("SetToMove");
+            float SpawnXPosition = Random.Range(_SpawnXPositionRatioRng.x, _SpawnXPositionRatioRng.y);
+            SpawnXPosition *= _Res.x;
+            float SpawnYPosition = Random.Range(_SpawnYPositionRatioRng.x, _SpawnYPositionRatioRng.y);
+            SpawnYPosition *= _Res.y;
+
+            int SpawnLevel = Random.Range(0, _CurrentLevel);
+            MonsterIndexRange IndexRange = _LevelRangeList[SpawnLevel];
+            int SpawnMonsterIndex = Random.Range(IndexRange._IndexMin, IndexRange._IndexMax);
+
+            GameObject SpawnedMonster = Instantiate(_MonsterPrefabList[SpawnMonsterIndex]) as GameObject;
+            if (SpawnedMonster != null)
+            {
+                SpawnedMonster.transform.position = new Vector3(SpawnXPosition, SpawnYPosition, _SpawnZPosition);
+                SpawnedMonster.SendMessage("SetToMove");
+            }
+            else if (Debug.isDebugBuild)
+            {
+                Debug.Log("Error on Monster Spawn");
+            }
         }
-        else if(Debug.isDebugBuild)
-        {
-            Debug.Log("Error on Monster Spawn");
-        }
+
+        Invoke("SpawnMonster", Random.Range(2.5f, _MaxMonsterSpawnTime));
     }
 }

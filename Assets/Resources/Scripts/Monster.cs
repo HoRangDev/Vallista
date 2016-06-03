@@ -5,8 +5,12 @@ using System.Collections;
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(Animator))]
 public class Monster : MonoBehaviour
 {
+    [SerializeField]
+    SpriteRenderer _SpriteRenderer;
+
     [SerializeField]
     private float _ShockDelay;
 
@@ -16,13 +20,27 @@ public class Monster : MonoBehaviour
 
     private AudioSource _AudioSource;
 
+    private Animator _Animator;
+    private float _ElasedTime;
+
     [SerializeField]
     private float _Speed;
 
+    [SerializeField]
+    private float _DestroyTime;
+
+    private bool _IsDead;
+
+    [SerializeField]
+    private Object _CoinPrefab;
+
     void Awake()
     {
+        _IsDead = false;
         _CurrentHealth = _StartHealth;
+        _SpriteRenderer = GetComponent(typeof(SpriteRenderer)) as SpriteRenderer;
         _AudioSource = GetComponent(typeof(AudioSource)) as AudioSource;
+        _Animator = GetComponent(typeof(Animator)) as Animator;
     }
 
     IEnumerator Movement()
@@ -38,49 +56,87 @@ public class Monster : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D Other)
     {
-        if(Other.gameObject.CompareTag("Projectile"))
+        if (!_IsDead)
         {
-            Projectile TargetProjectile = Other.GetComponent(typeof(Projectile)) as Projectile;
-            if (TargetProjectile != null)
+            if (Other.gameObject.CompareTag("Projectile"))
             {
-                _CurrentHealth -= TargetProjectile.Damage;
-                TargetProjectile.Destroy();
+                Projectile TargetProjectile = Other.GetComponent(typeof(Projectile)) as Projectile;
+                if (TargetProjectile != null)
+                {
+                    _CurrentHealth -= TargetProjectile.Damage;
+                    TargetProjectile.Destroy();
+                    _AudioSource.Play();
+                    _Animator.SetBool("IsAttacked", true);
 
-                if (_CurrentHealth <= 0)
-                {
-                    Dead();
-                }
-                else
-                {
-                    Attacked();
+                    if (_CurrentHealth <= 0)
+                    {
+                        Dead();
+                    }
+                    else
+                    {
+                        Attacked();
+                    }
                 }
             }
-        }
-        else if(Other.gameObject.CompareTag("EndLine"))
-        {
-            Debug.Log("Game End");
+            else if (Other.gameObject.CompareTag("EndLine"))
+            {
+                Debug.Log("Game End");
+            }
         }
     }
 
     public void SetToMove()
     {
-        //@TODO: Add Walk Animation
+        _Animator.SetBool("IsAttacked", false);
         StartCoroutine("Movement");
     }
 
     void Attacked()
     {
-        //@TODO: Add Attacked Animation
-        _AudioSource.Play();
         StopCoroutine("Movement");
         Invoke("SetToMove", _ShockDelay);
     }
 
+    void DropCoin()
+    {
+        float Range = Random.Range(0.0f, 1.0f);
+        if(Range >= 0.3f && Range <= 0.75f)
+        {
+            GameObject CoinObj = Instantiate(_CoinPrefab) as GameObject;
+            CoinObj.transform.position = transform.position;
+        }
+    }
+
     void Dead()
     {
-        //@TODO: Add Dead Animation and Destroy Process
-        //@TODO: Add Random Coin Drop Process
+        DropCoin();
+        _IsDead = true;
         GameManager.Instance.AddScore(_StartHealth);
         StopCoroutine("Movement");
+        StartCoroutine("DestroyProcess");
+    }
+
+    IEnumerator DestroyProcess()
+    {
+        while(true)
+        {
+            if (!_AudioSource.isPlaying)
+            {
+                _ElasedTime += Timer.Instance.DeltaTime;
+                if (_ElasedTime >= _DestroyTime)
+                {
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    float FadeOutRatio = 1.0f - Mathf.Clamp01((_ElasedTime / _DestroyTime));
+                    Color SpriteColor = _SpriteRenderer.color;
+                    SpriteColor.a = FadeOutRatio;
+                    _SpriteRenderer.color = SpriteColor;
+                }
+            }
+
+            yield return null;
+        }
     }
 }
