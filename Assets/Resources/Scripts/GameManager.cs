@@ -49,7 +49,8 @@
                     if (Input.touchCount != 0)
                     {
                         Touch CurrentTouch = Input.GetTouch(0);
-                        switch (CurrentTouch.phase)
+                    Vector2 TouchEndPosition = CurrentTouch.position;
+                    switch (CurrentTouch.phase)
                         {
                             case TouchPhase.Began:
                                 _TouchBeganPosition = CurrentTouch.position;
@@ -62,7 +63,6 @@
 
                             case TouchPhase.Ended:
                             case TouchPhase.Canceled:
-                                Vector2 TouchEndPosition = CurrentTouch.position;
                                 if (_TouchBeganPosition.y > TouchEndPosition.y)
                                 {
                                     Vector2 DeltaTouchPosition = -(TouchEndPosition - _TouchBeganPosition);
