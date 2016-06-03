@@ -8,19 +8,22 @@ namespace ParkJunHo
     {
         static SceneComponent instance = null;
 
-        public static SceneComponent GetInstance()
+        public static SceneComponent Instance
         {
-            if(instance == null)
+            get
             {
-                instance = FindObjectOfType<SceneComponent>();
-            }
+                if (instance == null)
+                {
+                    instance = FindObjectOfType<SceneComponent>();
+                }
 
-            if(instance == null)
-            {
-                instance = new GameObject("SceneComponent", new System.Type[] { typeof(SceneComponent) }).GetComponent<SceneComponent>();
-            }
+                if (instance == null)
+                {
+                    instance = new GameObject("SceneComponent", new System.Type[] { typeof(SceneComponent) }).GetComponent<SceneComponent>();
+                }
 
-            return instance;
+                return instance;
+            }
         }
 
         public void ScheduleLoadScene(float sec, int level)
