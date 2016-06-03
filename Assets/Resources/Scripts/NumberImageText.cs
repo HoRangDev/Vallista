@@ -9,7 +9,7 @@ public class NumberImageText : MonoBehaviour
     /// <summary>
     /// 내부 이미지 리스트
     /// </summary>
-    private List<Image> _TextImageList = new List<Image>();
+    private List<SpriteRenderer> _TextImageList = new List<SpriteRenderer>();
 
     private float _Alpha;
 
@@ -74,7 +74,7 @@ public class NumberImageText : MonoBehaviour
             _Pivot = value;
             for(int Index = 0; Index < _TextImageList.Count; ++Index)
             {
-                _TextImageList[Index].rectTransform.pivot = _Pivot;
+                //_TextImageList[Index].rectTransform.pivot = _Pivot;
             }
         }
     }
@@ -134,7 +134,7 @@ public class NumberImageText : MonoBehaviour
                 //@TODO: 오브젝트 풀 사용하기
                 GameObject ObjectTmp = new GameObject("TextChlid", typeof(Image));
                 ObjectTmp.transform.SetParent(transform);
-                Image ImageTmp = ObjectTmp.GetComponent(typeof(Image)) as Image;
+                SpriteRenderer ImageTmp = ObjectTmp.GetComponent(typeof(SpriteRenderer)) as SpriteRenderer;
                 _TextImageList.Add(ImageTmp);
             }
         }
@@ -152,17 +152,17 @@ public class NumberImageText : MonoBehaviour
             {
                 _TextImageList[Index].sprite = _NumberSprites[TextToInt];
                 Rect rect = _TextImageList[Index].sprite.rect;
-                _TextImageList[Index].rectTransform.sizeDelta = new Vector2(rect.width, rect.height);
-                _TextImageList[Index].rectTransform.localScale = new Vector3(_TextScale, _TextScale, 1.0f);
+                //_TextImageList[Index].rectTransform.sizeDelta = new Vector2(rect.width, rect.height);
+                _TextImageList[Index].transform.localScale = new Vector3(_TextScale, _TextScale, 1.0f);
             }
 
             if (!_bIsUseCustomSpace)
             {
-                float ImageWidth = _TextImageList[Index].rectTransform.sizeDelta.x;
+                float ImageWidth = _TextImageList[Index].sprite.rect.width;
                 Size.x += ImageWidth;
             }
 
-            Size.y = Mathf.Max(Size.y, _TextImageList[Index].rectTransform.sizeDelta.y);
+            Size.y = Mathf.Max(Size.y, _TextImageList[Index].sprite.rect.height);
         }
 
         if(_bIsUseCustomSpace)
@@ -183,7 +183,7 @@ public class NumberImageText : MonoBehaviour
         Vector2 Position = Vector2.zero;
         for (int Index = 0; Index < _TextImageList.Count; ++Index)
         {
-            float ImageWidth = _TextImageList[Index].rectTransform.sizeDelta.x;
+            float ImageWidth = _TextImageList[Index].sprite.rect.width;
 
             if (IsUseCustomSpace)
             {
@@ -196,7 +196,7 @@ public class NumberImageText : MonoBehaviour
             }
 
             Position.y = BeginPosition.y;
-            _TextImageList[Index].rectTransform.localPosition = Position;
+            _TextImageList[Index].transform.localPosition = Position;
         }
 
         /// 텍스트 Alpha 값 설정
