@@ -18,7 +18,7 @@ namespace ParkJunHo
                 _SceneDic.Add("LogoScene", 0);
                 _SceneDic.Add("TitleScene", 1);
                 _SceneDic.Add("TutorialScene", 2);
-                _SceneDic.Add("GameScene", 3);
+                _SceneDic.Add("GameScene", 4);
             }
         }
 

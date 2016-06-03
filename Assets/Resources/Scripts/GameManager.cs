@@ -21,11 +21,17 @@ public class GameManager : MonoBehaviour
     private Vector2 _TouchBeganPosition;
 
     [SerializeField]
+<<<<<<< HEAD
     private List<Object> _ProjectilePrefabList = new List<Object>();
     private int _SelectedProjectileIndex;
 
+=======
+    private Object TestProjTilePrefab;
+    
+>>>>>>> origin/master
     [SerializeField]
     private Vector2 _ProjectileSpawnPosition;
+    public Vector2 ProjectileSpawnPosition { get { return _ProjectileSpawnPosition; } }
 
     [SerializeField]
     private float _ProjectileRespawnDelay;
