@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(BoxCollider2D))]
+[RequireComponent(typeof(Rigidbody2D))]
 public class Projectile : MonoBehaviour
 {
     private SpriteRenderer _SpriteRenderer;
@@ -32,49 +35,52 @@ public class Projectile : MonoBehaviour
 
     public void SetToMove()
     {
-        StartCoroutine("ProjectileMovement");
+        StartCoroutine("Movement");
     }
 
-    IEnumerator ProjectileMovement()
+    IEnumerator Movement()
     {
-        Vector2 MoveVector = _DirectionVector * _Speed * Timer.Instance.DeltaTime;
-        _Transform.position = new Vector2(_Transform.position.x + MoveVector.x, _Transform.position.y + MoveVector.y);
-        yield return null;
+        while (true)
+        {
+            Vector2 MoveVector = _DirectionVector * _Speed * Timer.Instance.DeltaTime;
+            _Transform.position = new Vector2(_Transform.position.x + MoveVector.x, _Transform.position.y + MoveVector.y);
+            yield return null;
+        }
     }
 
-    IEnumerator ProjectileDestroy()
+    IEnumerator DestroyProcess()
     {
-        _ElasedTime += Timer.Instance.DeltaTime;
-        if(_ElasedTime >= _DestroyTime)
+        while (true)
         {
-            StopAllCoroutines();
-            Destroy(gameObject);
-        }
-        else
-        {
-            float FadeOutRatio = 1.0f - Mathf.Clamp01((_ElasedTime / _DestroyTime));
-            Color SpriteColor = _SpriteRenderer.color;
-            SpriteColor.a = FadeOutRatio;
-            _SpriteRenderer.color = SpriteColor;
-        }
+            _ElasedTime += Timer.Instance.DeltaTime;
+            if (_ElasedTime >= _DestroyTime)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                float FadeOutRatio = 1.0f - Mathf.Clamp01((_ElasedTime / _DestroyTime));
+                Color SpriteColor = _SpriteRenderer.color;
+                SpriteColor.a = FadeOutRatio;
+                _SpriteRenderer.color = SpriteColor;
+            }
 
-        yield return null;
+            yield return null;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D Other)
     {
-        switch(Other.tag)
+        if (Other.gameObject.CompareTag("Wall"))
         {
-            case "Wall":
-                _DirectionVector.x *= -1.0f;
-                _CurrentDamage = Mathf.Clamp(_CurrentDamage * 2, _StartDamage, _MaxDamage);
-                break;
+            _DirectionVector.x *= -1.0f;
+            _CurrentDamage = Mathf.Clamp(_CurrentDamage * 2, _StartDamage, _MaxDamage);
         }
     }
 
     public void Destroy()
     {
-        StopCoroutine("ProjectileMovement");
-        StartCoroutine("ProjectileDestroy");
+        StopCoroutine("Movement");
+        StartCoroutine("DestroyProcess");
     }
 }
