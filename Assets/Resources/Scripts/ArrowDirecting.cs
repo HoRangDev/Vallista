@@ -22,7 +22,7 @@ public class ArrowDirecting : MonoBehaviour
 	    if(GameManager.Instance.IsOnTouch)
         {
             sprite.enabled = true;
-            transform.localRotation = Quaternion.Euler(0, 0, -GameManager.Instance.ProjectileAimAngle);
+            transform.localRotation = Quaternion.Euler(0, 0, 90 + GameManager.Instance.ProjectileAimAngle);
         }
         else
         {
