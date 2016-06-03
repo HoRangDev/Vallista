@@ -51,19 +51,22 @@
                     if (Input.touchCount != 0)
                     {
                         Touch CurrentTouch = Input.GetTouch(0);
-                        switch (CurrentTouch.phase)
+                    Vector2 TouchEndPosition = CurrentTouch.position;
+                    switch (CurrentTouch.phase)
                         {
                             case TouchPhase.Began:
                                 _TouchBeganPosition = CurrentTouch.position;
                                 _bIsOnTouch = true;
                                 break;
 
+                        case TouchPhase.Moved:
+                            _ProjectileAimAngle = Vector2.Angle(TouchEndPosition, _TouchBeganPosition);
+                            break;
+
                             case TouchPhase.Ended:
                             case TouchPhase.Canceled:
-                                Vector2 TouchEndPosition = CurrentTouch.position;
                                 if (_TouchBeganPosition.y > TouchEndPosition.y)
                                 {
-                                    _ProjectileAimAngle = Vector2.Angle(TouchEndPosition, _TouchBeganPosition);
                                     Vector2 DeltaTouchPosition = -(TouchEndPosition - _TouchBeganPosition);
                                     DeltaTouchPosition.Normalize();
                                     _CurrentProjectile.DirectionVector = DeltaTouchPosition;

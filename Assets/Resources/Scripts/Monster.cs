@@ -4,6 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(AudioSource))]
 public class Monster : MonoBehaviour
 {
     [SerializeField]
@@ -12,13 +13,14 @@ public class Monster : MonoBehaviour
     [SerializeField]
     private int _Health;
 
+    private AudioSource _AudioSource;
+
     [SerializeField]
     private float _Speed;
 
-    public void SetToMove()
+    void Awake()
     {
-        //@TODO: Add Walk Animation
-        StartCoroutine("Movement");
+        _AudioSource = GetComponent(typeof(AudioSource)) as AudioSource;
     }
 
     IEnumerator Movement()
@@ -54,9 +56,16 @@ public class Monster : MonoBehaviour
         }
     }
 
+    public void SetToMove()
+    {
+        //@TODO: Add Walk Animation
+        StartCoroutine("Movement");
+    }
+
     void Attacked()
     {
         //@TODO: Add Attacked Animation
+        _AudioSource.Play();
         StopCoroutine("Movement");
         Invoke("SetToMove", _ShockDelay);
     }

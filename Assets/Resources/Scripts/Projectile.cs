@@ -1,13 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(AudioSource))]
 public class Projectile : MonoBehaviour
 {
     private SpriteRenderer _SpriteRenderer;
     private Transform _Transform;
+    private AudioSource _AudioSource;
+
+    [SerializeField]
+    private List<AudioClip> _WallCollisionSoundEffects = new List<AudioClip>();
+    private int _SoundEffectIndex = 0;
 
     [SerializeField]
     private int _StartDamage;
@@ -29,6 +36,7 @@ public class Projectile : MonoBehaviour
     {
         _Transform = transform;
         _SpriteRenderer = GetComponent(typeof(SpriteRenderer)) as SpriteRenderer;
+        _AudioSource = GetComponent(typeof(AudioSource)) as AudioSource;
 
         _CurrentDamage = _StartDamage;
     }
@@ -73,8 +81,13 @@ public class Projectile : MonoBehaviour
     {
         if (Other.gameObject.CompareTag("Wall"))
         {
+            _SoundEffectIndex = Mathf.Min(_SoundEffectIndex + 1, _WallCollisionSoundEffects.Count - 1);
+            _AudioSource.clip = _WallCollisionSoundEffects[_SoundEffectIndex];
+            _AudioSource.Play();
             _DirectionVector.x *= -1.0f;
             _CurrentDamage = Mathf.Clamp(_CurrentDamage * 2, _StartDamage, _MaxDamage);
+
+
         }
     }
 
