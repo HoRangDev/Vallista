@@ -39,12 +39,12 @@ namespace ParkJunHo
 
                     if (PlayerPrefs.GetInt("IsPlayed", 0) == 0)
                     {
+                        PlayerPrefs.SetInt("IsPlayed", 1);
                         changer._Scene = "TutorialScene";
                         break;
                     }
                     else
                     {
-                        //PlayerPrefs.SetInt("IsPlayed", 1);
                         changer._Scene = "GameScene";
                         break;
                     }

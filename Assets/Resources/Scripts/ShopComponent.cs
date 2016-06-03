@@ -9,7 +9,10 @@ public class ShopComponent : MonoBehaviour
         get
         {
             if (_Instance == null)
+            {
                 _Instance = FindObjectOfType<ShopComponent>();
+                _Instance.Start();
+            }
 
             return _Instance;
         }
@@ -24,20 +27,35 @@ public class ShopComponent : MonoBehaviour
     private int _Coins = 0;
     public int Coin { get { return _Coins; } }
 
+    private ShoppingItems[] _ShopItems = new ShoppingItems[4];
+
+    private bool _Initialized = false;
+
 	// Use this for initialization
 	void Start ()
     {
-        _Coins = PlayerPrefs.GetInt("Coin", 0);
-        _Coins += PlayerPrefs.GetInt("StockCoin", 0);
-	    for(int i = 0; i < 4; i++)
+        if(!_Initialized)
         {
-            _Items[i] = PlayerPrefs.GetInt("shop" + i.ToString(), 0);
+            _Initialized = true;
+            _Coins = PlayerPrefs.GetInt("Coin", 0);
+            _Coins += PlayerPrefs.GetInt("StockCoin", 0);
+            for (int i = 0; i < 4; i++)
+            {
+                _Items[i] = PlayerPrefs.GetInt("shop" + i.ToString(), 0);
+                Debug.Log("shop" + i.ToString() + " " + _Items[i].ToString());
+            }
+
+            _ShopItems = FindObjectsOfType<ShoppingItems>();
         }
 	}
 
     public void BuyItem(int index)
     {
-        _Items[index] = 1;
+        if(_Items[index] == 0 && _Coins >= 200)
+        {
+            _Coins -= 200;
+            _Items[index] = 1;
+        }
     }
 
     public void EquipItem(int index)
@@ -51,6 +69,13 @@ public class ShopComponent : MonoBehaviour
         _Items[index] = 2;
     }
 	
+    public void UpdateShopItems()
+    {
+        for(int i = 0; i < 4; i++)
+        {
+            _ShopItems[i].UpdateSprite();
+        }
+    }
 
     void OnDestroy()
     {
@@ -58,6 +83,9 @@ public class ShopComponent : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             PlayerPrefs.SetInt("shop" + i.ToString(), _Items[i]);
+
+            if (_Items[i] == 2)
+                PlayerPrefs.SetInt("EquipedBall", i);
         }
     }
 }

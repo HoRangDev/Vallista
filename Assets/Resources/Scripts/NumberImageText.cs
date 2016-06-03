@@ -11,7 +11,8 @@ public class NumberImageText : MonoBehaviour
     /// </summary>
     private List<SpriteRenderer> _TextImageList = new List<SpriteRenderer>();
 
-    private float _Alpha;
+    [SerializeField]
+    private float _Alpha = 1;
 
     public float Alpha
     {
@@ -120,6 +121,11 @@ public class NumberImageText : MonoBehaviour
         Refresh();
     }
 
+    void Update()
+    {
+        Refresh();
+    }
+
     /// <summary>
     /// 현재 설정된 정보를 기반으로 텍스트를 새로고침합니다.
     /// </summary>
@@ -132,9 +138,10 @@ public class NumberImageText : MonoBehaviour
             for(int Index = 0; Index < LengthGap; ++Index)
             {
                 //@TODO: 오브젝트 풀 사용하기
-                GameObject ObjectTmp = new GameObject("TextChlid", typeof(Image));
+                GameObject ObjectTmp = new GameObject("TextChlid", typeof(SpriteRenderer));
                 ObjectTmp.transform.SetParent(transform);
                 SpriteRenderer ImageTmp = ObjectTmp.GetComponent(typeof(SpriteRenderer)) as SpriteRenderer;
+                ImageTmp.sortingOrder = 1;
                 _TextImageList.Add(ImageTmp);
             }
         }
@@ -150,6 +157,7 @@ public class NumberImageText : MonoBehaviour
             bool bIsDuplicated = _TextImageList[Index].sprite == _NumberSprites[TextToInt];
             if(!bIsDuplicated)
             {
+
                 _TextImageList[Index].sprite = _NumberSprites[TextToInt];
                 Rect rect = _TextImageList[Index].sprite.rect;
                 //_TextImageList[Index].rectTransform.sizeDelta = new Vector2(rect.width, rect.height);
@@ -179,8 +187,9 @@ public class NumberImageText : MonoBehaviour
         Pivot = Pivot;
 
         /// 텍스트 위치 설정
-        Vector2 BeginPosition = new Vector2((-this.Size.x * TextPivot.x), (this.Size.y * (0.5f - TextPivot.y)));
+        Vector2 BeginPosition = new Vector2((this.Size.x * (TextPivot.x - 1)), (this.Size.y * (0.5f - TextPivot.y)));
         Vector2 Position = Vector2.zero;
+        //Debug.Log("BeginPos (" + BeginPosition.x + ", " + BeginPosition.y + ")");
         for (int Index = 0; Index < _TextImageList.Count; ++Index)
         {
             float ImageWidth = _TextImageList[Index].sprite.rect.width;
@@ -191,12 +200,12 @@ public class NumberImageText : MonoBehaviour
             }
             else
             {
-                Position.x += BeginPosition.x + (ImageWidth + (PreviousWidth * Pivot.x));
+                Position.x = BeginPosition.x + ((ImageWidth) * (Index)) ;
                 PreviousWidth = ImageWidth;
             }
 
             Position.y = BeginPosition.y;
-            _TextImageList[Index].transform.localPosition = Position;
+            _TextImageList[Index].transform.localPosition = new Vector3(Position.x, Position.y, 10);
         }
 
         /// 텍스트 Alpha 값 설정
