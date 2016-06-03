@@ -43,15 +43,15 @@ namespace ParkJunHo
                 {
                     SceneChanger changer = new GameObject("Changer", new System.Type[] { typeof(SceneChanger) }).GetComponent<SceneChanger>();
 
-                    if (PlayerPrefs.GetInt("IsPlayed", 0) != 0)
+                    if (PlayerPrefs.GetInt("IsPlayed", 0) == 0)
                     {
-                        //PlayerPrefs.SetInt("IsPlayed", 1);
-                        changer.Level = 2;
+                        changer._Scene = "TutorialScene";
                         break;
                     }
                     else
                     {
-                        changer.Level = 3;
+                        //PlayerPrefs.SetInt("IsPlayed", 1);
+                        changer._Scene = "GameScene";
                         break;
                     }
                 }
