@@ -50,9 +50,6 @@ public class GameManager : MonoBehaviour
                 if (Input.touchCount != 0)
                 {
                     Touch CurrentTouch = Input.GetTouch(0);
-                    Vector2 TouchEndPosition = CurrentTouch.position;
-                    Vector2 DeltaTouchPosition = -(TouchEndPosition - _TouchBeganPosition);
-                    DeltaTouchPosition.Normalize();
 
                     switch (CurrentTouch.phase)
                     {
@@ -62,11 +59,21 @@ public class GameManager : MonoBehaviour
                             break;
 
                         case TouchPhase.Moved:
-                            _ProjectileAimAngle = Mathf.Atan2(DeltaTouchPosition.y, DeltaTouchPosition.x) * Mathf.Rad2Deg;
+                            Vector2 MovedPosition = CurrentTouch.position;
+                            if (_TouchBeganPosition.y > MovedPosition.y)
+                            {
+                                Vector2 MovedDeltaPosition = MovedPosition - _TouchBeganPosition;
+                                _ProjectileAimAngle = Mathf.Atan2(MovedDeltaPosition.y, MovedDeltaPosition.x) * Mathf.Rad2Deg;
+                            }
                             break;
 
                         case TouchPhase.Ended:
                         case TouchPhase.Canceled:
+                            Vector2 TouchEndPosition = CurrentTouch.position;
+                            Vector2 DeltaTouchPosition = -(TouchEndPosition - _TouchBeganPosition);
+                            DeltaTouchPosition.Normalize();
+
+                            _ProjectileAimAngle = Mathf.Atan2(DeltaTouchPosition.y, DeltaTouchPosition.x) * Mathf.Rad2Deg;
                             if (_TouchBeganPosition.y > TouchEndPosition.y)
                             {
                                 _CurrentProjectile.DirectionVector = DeltaTouchPosition;
@@ -104,6 +111,11 @@ public class GameManager : MonoBehaviour
             ProjectileObj.transform.position = _ProjectileSpawnPosition;
             _CurrentProjectile = ProjectileObj.GetComponent(typeof(Projectile)) as Projectile;
         }
+    }
+
+    void SetToGameEnd()
+    {
+
     }
 
 }

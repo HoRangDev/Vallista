@@ -11,7 +11,8 @@ public class Monster : MonoBehaviour
     private float _ShockDelay;
 
     [SerializeField]
-    private int _Health;
+    private int _StartHealth;
+    private int _CurrentHealth;
 
     private AudioSource _AudioSource;
 
@@ -20,6 +21,7 @@ public class Monster : MonoBehaviour
 
     void Awake()
     {
+        _CurrentHealth = _StartHealth;
         _AudioSource = GetComponent(typeof(AudioSource)) as AudioSource;
     }
 
@@ -41,10 +43,10 @@ public class Monster : MonoBehaviour
             Projectile TargetProjectile = Other.GetComponent(typeof(Projectile)) as Projectile;
             if (TargetProjectile != null)
             {
-                _Health -= TargetProjectile.Damage;
+                _CurrentHealth -= TargetProjectile.Damage;
                 TargetProjectile.Destroy();
 
-                if (_Health <= 0)
+                if (_CurrentHealth <= 0)
                 {
                     Dead();
                 }
@@ -53,6 +55,10 @@ public class Monster : MonoBehaviour
                     Attacked();
                 }
             }
+        }
+        else if(Other.gameObject.CompareTag("EndLine"))
+        {
+            Debug.Log("Game End");
         }
     }
 
@@ -74,6 +80,7 @@ public class Monster : MonoBehaviour
     {
         //@TODO: Add Dead Animation and Destroy Process
         //@TODO: Add Random Coin Drop Process
+        GameManager.Instance.AddScore(_StartHealth);
         StopCoroutine("Movement");
     }
 }
