@@ -21,14 +21,11 @@ public class GameManager : MonoBehaviour
     private Vector2 _TouchBeganPosition;
 
     [SerializeField]
-<<<<<<< HEAD
     private List<Object> _ProjectilePrefabList = new List<Object>();
     private int _SelectedProjectileIndex;
 
-=======
     private Object TestProjTilePrefab;
     
->>>>>>> origin/master
     [SerializeField]
     private Vector2 _ProjectileSpawnPosition;
     public Vector2 ProjectileSpawnPosition { get { return _ProjectileSpawnPosition; } }
@@ -43,7 +40,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         _ManagerInstance = this;
-        _SelectedProjectileIndex = Mathf.Clamp(PlayerPrefs.GetInt("SelectProjectileIndex", 0), 0, _ProjectilePrefabList.Count - 1);
+        _SelectedProjectileIndex = Mathf.Clamp(PlayerPrefs.GetInt("EquipedBall", 0), 0, _ProjectilePrefabList.Count - 1);
         SpawnProjectile();
     }
 
@@ -84,6 +81,11 @@ public class GameManager : MonoBehaviour
                                 Vector2 MovedDeltaPosition = MovedPosition - _TouchBeganPosition;
                                 _ProjectileAimAngle = Mathf.Atan2(MovedDeltaPosition.y, MovedDeltaPosition.x) * Mathf.Rad2Deg;
                             }
+                            break;
+
+
+                        case TouchPhase.Stationary:
+                            _bIsOnTouch = true;
                             break;
 
                         case TouchPhase.Ended:
@@ -132,9 +134,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void SetToGameEnd()
+    public void SetToGameEnd()
     {
-
+        PlayerPrefs.SetInt("StockCoin", _StockCoin);
+        if(PlayerPrefs.GetInt("BestScore", 0) < _CurrentScore)
+        {
+            PlayerPrefs.SetInt("BestScore", _CurrentScore);
+        }
+        PlayerPrefs.SetInt("Score", _CurrentScore);
+        ParkJunHo.SceneComponent.Instance.ScheduleLoadScene(0.1f, "ResultScene");
     }
 
 }

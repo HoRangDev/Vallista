@@ -14,11 +14,11 @@ namespace ParkJunHo
         {
             if(_SceneDic.Count == 0)
             {
-                Debug.Log("Scene Comp Started");
                 _SceneDic.Add("LogoScene", 0);
                 _SceneDic.Add("TitleScene", 1);
                 _SceneDic.Add("TutorialScene", 2);
-                _SceneDic.Add("GameScene", 4);
+                _SceneDic.Add("GameScene", 3);
+                _SceneDic.Add("ResultScene", 4);
             }
         }
 
@@ -45,7 +45,7 @@ namespace ParkJunHo
         {
             int level = 0;
             _SceneDic.TryGetValue(sceneName, out level);
-            Debug.Log(sceneName + " " + level);
+            //Debug.Log(sceneName + " " + level);
             StartCoroutine(CSceneChange(sec, level));
         }
 

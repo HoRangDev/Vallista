@@ -7,9 +7,18 @@ namespace ParkJunHo
     {
         public float Second = 0f;
         public string _Scene = "";
+        public bool _bIsStartOnChange = true;
 
         // Use this for initialization
         void Start()
+        {
+            if (_bIsStartOnChange)
+            {
+                SceneComponent.Instance.ScheduleLoadScene(Second, _Scene);
+            }
+        }
+
+        public void Event()
         {
             SceneComponent.Instance.ScheduleLoadScene(Second, _Scene);
         }

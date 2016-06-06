@@ -4,10 +4,15 @@ using UnityEngine.UI;
 
 public class CoinText : MonoBehaviour
 {
+    Text _Text;
 
-	// Use this for initialization
-	void Start ()
+	void Awake()
     {
-        GetComponent<Text>().text = ShopComponent.Instance.Coin.ToString();
+        _Text = GetComponent(typeof(Text)) as Text;
 	}
+
+    public void Refresh()
+    {
+        _Text.text = ShopComponent.Instance.Coin.ToString();
+    }
 }

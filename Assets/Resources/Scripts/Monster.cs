@@ -8,7 +8,6 @@ using System.Collections;
 [RequireComponent(typeof(Animator))]
 public class Monster : MonoBehaviour
 {
-    [SerializeField]
     SpriteRenderer _SpriteRenderer;
 
     [SerializeField]
@@ -21,7 +20,7 @@ public class Monster : MonoBehaviour
     private AudioSource _AudioSource;
 
     private Animator _Animator;
-    private float _ElasedTime;
+    private float _ElasedTime = 0.0f;
 
     [SerializeField]
     private float _Speed;
@@ -33,6 +32,9 @@ public class Monster : MonoBehaviour
 
     [SerializeField]
     private Object _CoinPrefab;
+
+    [SerializeField]
+    private Transform _HPBarTransform;
 
     void Awake()
     {
@@ -47,9 +49,12 @@ public class Monster : MonoBehaviour
     {
         while(true)
         {
-            Vector2 Position = transform.position;
-            Position.y -= (_Speed * Timer.Instance.DeltaTime);
-            transform.position = Position;
+            if (!_IsDead)
+            {
+                Vector2 Position = transform.position;
+                Position.y -= (_Speed * Timer.Instance.DeltaTime);
+                transform.position = Position;
+            }
             yield return null;
         }
     }
@@ -63,24 +68,32 @@ public class Monster : MonoBehaviour
                 Projectile TargetProjectile = Other.GetComponent(typeof(Projectile)) as Projectile;
                 if (TargetProjectile != null)
                 {
-                    _CurrentHealth -= TargetProjectile.Damage;
-                    TargetProjectile.Destroy();
-                    _AudioSource.Play();
-                    _Animator.SetBool("IsAttacked", true);
+                    if (TargetProjectile.IsValid)
+                    {
+                        _CurrentHealth -= TargetProjectile.Damage;
+                        TargetProjectile.Destroy();
+                        _AudioSource.Play();
+                        _Animator.SetBool("IsAttacked", true);
+                        StopCoroutine("Movement");
 
-                    if (_CurrentHealth <= 0)
-                    {
-                        Dead();
-                    }
-                    else
-                    {
-                        Attacked();
+                        if (_CurrentHealth <= 0)
+                        {
+                            _HPBarTransform.gameObject.SetActive(false);
+                            Dead();
+                        }
+                        else
+                        {
+                            Vector3 Scale = _HPBarTransform.localScale;
+                            Scale.x = 10.0f * (_CurrentHealth / (float)_StartHealth);
+                            _HPBarTransform.localScale = Scale;
+                            Attacked();
+                        }
                     }
                 }
             }
             else if (Other.gameObject.CompareTag("EndLine"))
             {
-                Debug.Log("Game End");
+                GameManager.Instance.SetToGameEnd();
             }
         }
     }
@@ -93,7 +106,6 @@ public class Monster : MonoBehaviour
 
     void Attacked()
     {
-        StopCoroutine("Movement");
         Invoke("SetToMove", _ShockDelay);
     }
 
@@ -112,7 +124,6 @@ public class Monster : MonoBehaviour
         DropCoin();
         _IsDead = true;
         GameManager.Instance.AddScore(_StartHealth);
-        StopCoroutine("Movement");
         StartCoroutine("DestroyProcess");
     }
 
@@ -129,7 +140,7 @@ public class Monster : MonoBehaviour
                 }
                 else
                 {
-                    float FadeOutRatio = 1.0f - Mathf.Clamp01((_ElasedTime / _DestroyTime));
+                    float FadeOutRatio = Mathf.Lerp(1.0f, 0.0f, (_ElasedTime / _DestroyTime));
                     Color SpriteColor = _SpriteRenderer.color;
                     SpriteColor.a = FadeOutRatio;
                     _SpriteRenderer.color = SpriteColor;

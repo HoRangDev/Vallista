@@ -9,8 +9,11 @@ using System.Collections.Generic;
 public class Projectile : MonoBehaviour
 {
     private SpriteRenderer _SpriteRenderer;
+    private BoxCollider2D _Collider;
     private Transform _Transform;
     private AudioSource _AudioSource;
+    [SerializeField]
+    private AudioSource _SubAudioSource;
 
     [SerializeField]
     private Sprite[] _LevelSpriteList = new Sprite[3];
@@ -18,6 +21,9 @@ public class Projectile : MonoBehaviour
     [SerializeField]
     private List<AudioClip> _WallCollisionSoundEffects = new List<AudioClip>();
     private int _SoundEffectIndex = 0;
+
+    [SerializeField]
+    private AudioClip _HitSoundEffect;
 
     [SerializeField]
     private int _StartDamage;
@@ -35,9 +41,14 @@ public class Projectile : MonoBehaviour
     private float _DestroyTime;
     private float _ElasedTime;
 
+    private bool _bIsValid;
+    public bool IsValid { get { return _bIsValid; } }
+
     void Awake()
     {
+        _bIsValid= true;
         _Transform = transform;
+        _Collider = GetComponent(typeof(BoxCollider2D)) as BoxCollider2D;
         _SpriteRenderer = GetComponent(typeof(SpriteRenderer)) as SpriteRenderer;
         _AudioSource = GetComponent(typeof(AudioSource)) as AudioSource;
 
@@ -55,6 +66,10 @@ public class Projectile : MonoBehaviour
         {
             Vector2 MoveVector = _DirectionVector * _Speed * Timer.Instance.DeltaTime;
             _Transform.position = new Vector2(_Transform.position.x + MoveVector.x, _Transform.position.y + MoveVector.y);
+            if(_Transform.position.y >= 1280.0f * 0.518f)
+            {
+                Destroy(gameObject);
+            }
             yield return null;
         }
     }
@@ -70,7 +85,7 @@ public class Projectile : MonoBehaviour
             }
             else
             {
-                float FadeOutRatio = 1.0f - Mathf.Clamp01((_ElasedTime / _DestroyTime));
+                float FadeOutRatio = Mathf.Lerp(1.0f, 0.0f, Mathf.Clamp01(_ElasedTime / _DestroyTime));
                 Color SpriteColor = _SpriteRenderer.color;
                 SpriteColor.a = FadeOutRatio;
                 _SpriteRenderer.color = SpriteColor;
@@ -91,10 +106,17 @@ public class Projectile : MonoBehaviour
             _DirectionVector.x *= -1.0f;
             _CurrentDamage = Mathf.Clamp(_CurrentDamage * 2, _StartDamage, _MaxDamage);
         }
+        else if(Other.gameObject.CompareTag("Monster"))
+        {
+            _Collider.enabled = false;
+            _SubAudioSource.clip = _HitSoundEffect;
+            _SubAudioSource.Play();
+        }
     }
 
     public void Destroy()
     {
+        _bIsValid = false;
         StopCoroutine("Movement");
         StartCoroutine("DestroyProcess");
     }

@@ -10,7 +10,6 @@ public class StockText : MonoBehaviour
 	void Start ()
     {
         _Text = GetComponent<Text>();
-
         _Text.text = PlayerPrefs.GetInt("StockCoin", 0).ToString();
 	}
 }

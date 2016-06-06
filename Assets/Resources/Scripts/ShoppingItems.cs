@@ -12,39 +12,52 @@ public class ShoppingItems : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
-        Image img = null;
-        GetComponent<Button>().enabled = true;
-        Debug.Log("Index " + _Index + " Item " + ShopComponent.Instance.Items[_Index]);
-        switch (ShopComponent.Instance.Items[_Index])
-        {
-            case 0:
-                img = GetComponent<Image>();
-                img.sprite = _Sprites[0];
-                img.SetNativeSize();
-                
-                break;
-            case 1:
-                img = GetComponent<Image>();
-                img.sprite = _Sprites[1];
-                img.SetNativeSize();
-                break;
-            case 2:
-                img = GetComponent<Image>();
-                img.sprite = _Sprites[2];
-                img.SetNativeSize();
-
-                GetComponent<Button>().enabled = false;
-                break;
-        }
+        Refresh();
 	}
 
     public void UpdateSprite()
     {
-        Start();
+        Refresh();
     }
 
     public void OnClick()
     {
-        ShopComponent.Instance.BuyItem(_Index);
+        switch(ShopComponent.Instance.Items[_Index])
+        {
+            case 0:
+                ShopComponent.Instance.BuyItem(_Index);
+                break;
+
+            case 1:
+                ShopComponent.Instance.EquipItem(_Index);
+                break;
+        }
+
+        ShopComponent.Instance.UpdateShopItems();
     }
+
+    public void Refresh()
+    {
+        Image img = null;
+            var ButtonComp = GetComponent<Button>();
+            img = GetComponent<Image>();
+            switch (ShopComponent.Instance.Items[_Index])
+            {
+                case 0:
+                    img.sprite = _Sprites[0];
+                    img.SetNativeSize();
+                    ButtonComp.enabled = true;
+                    break;
+                case 1:
+                    img.sprite = _Sprites[1];
+                    img.SetNativeSize();
+                    ButtonComp.enabled = true;
+                    break;
+                case 2:
+                    img.sprite = _Sprites[2];
+                    img.SetNativeSize();
+                    ButtonComp.enabled = false;
+                    break;
+            }
+        }
 }

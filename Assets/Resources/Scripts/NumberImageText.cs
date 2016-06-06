@@ -148,7 +148,6 @@ public class NumberImageText : MonoBehaviour
 
         // TextImageList's Length equal Text's Length
         Vector2 Size = Vector2.zero;
-        float PreviousWidth = 0.0f;
         /// 스프라이트 설정 설정
         for (int Index = 0;Index < _TextImageList.Count; ++Index)
         {
@@ -159,8 +158,6 @@ public class NumberImageText : MonoBehaviour
             {
 
                 _TextImageList[Index].sprite = _NumberSprites[TextToInt];
-                Rect rect = _TextImageList[Index].sprite.rect;
-                //_TextImageList[Index].rectTransform.sizeDelta = new Vector2(rect.width, rect.height);
                 _TextImageList[Index].transform.localScale = new Vector3(_TextScale, _TextScale, 1.0f);
             }
 
@@ -189,7 +186,6 @@ public class NumberImageText : MonoBehaviour
         /// 텍스트 위치 설정
         Vector2 BeginPosition = new Vector2((this.Size.x * (TextPivot.x - 1)), (this.Size.y * (0.5f - TextPivot.y)));
         Vector2 Position = Vector2.zero;
-        //Debug.Log("BeginPos (" + BeginPosition.x + ", " + BeginPosition.y + ")");
         for (int Index = 0; Index < _TextImageList.Count; ++Index)
         {
             float ImageWidth = _TextImageList[Index].sprite.rect.width;
@@ -201,7 +197,6 @@ public class NumberImageText : MonoBehaviour
             else
             {
                 Position.x = BeginPosition.x + ((ImageWidth) * (Index)) ;
-                PreviousWidth = ImageWidth;
             }
 
             Position.y = BeginPosition.y;

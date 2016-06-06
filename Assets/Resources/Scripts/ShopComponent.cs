@@ -18,11 +18,11 @@ public class ShopComponent : MonoBehaviour
         }
     }
 
+    [SerializeField]
+    private CoinText _CoinText;
+
     private int[] _Items = new int[4];
     public int[] Items { get { return _Items; } }
-
-    [SerializeField]
-    private int[] _Prices = new int[4];
 
     private int _Coins = 0;
     public int Coin { get { return _Coins; } }
@@ -31,7 +31,6 @@ public class ShopComponent : MonoBehaviour
 
     private bool _Initialized = false;
 
-	// Use this for initialization
 	void Start ()
     {
         if(!_Initialized)
@@ -41,11 +40,19 @@ public class ShopComponent : MonoBehaviour
             _Coins += PlayerPrefs.GetInt("StockCoin", 0);
             for (int i = 0; i < 4; i++)
             {
-                _Items[i] = PlayerPrefs.GetInt("shop" + i.ToString(), 0);
-                Debug.Log("shop" + i.ToString() + " " + _Items[i].ToString());
+                if (i == 0 && _Items[0] == 0)
+                {
+                    _Items[i] = PlayerPrefs.GetInt("shop" + i.ToString(), 2);
+                }
+                else
+                {
+                    _Items[i] = PlayerPrefs.GetInt("shop" + i.ToString(), 0);
+
+                }
             }
 
             _ShopItems = FindObjectsOfType<ShoppingItems>();
+            _CoinText.Refresh();
         }
 	}
 
@@ -55,6 +62,7 @@ public class ShopComponent : MonoBehaviour
         {
             _Coins -= 200;
             _Items[index] = 1;
+            _CoinText.Refresh();
         }
     }
 
@@ -73,7 +81,7 @@ public class ShopComponent : MonoBehaviour
     {
         for(int i = 0; i < 4; i++)
         {
-            _ShopItems[i].UpdateSprite();
+            _ShopItems[i].Refresh();
         }
     }
 

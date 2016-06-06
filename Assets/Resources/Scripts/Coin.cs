@@ -4,39 +4,56 @@ using System.Collections;
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(AudioSource))]
 public class Coin : MonoBehaviour
 {
     private int _Amount;
     public int Amount { get { return _Amount; } set { _Amount = value; } }
 
     private SpriteRenderer _SpriteRenderer;
+    private AudioSource _AudioSource;
+
+    private bool _bIsCollectable = false;
+    public bool IsCollectable { get { return _bIsCollectable; } }
 
     private float _ElasedTime;
-    private float _DestroyTime = 0.08f;
+
+    [SerializeField]
+    private float _DestroyTime = 1.0f;
 
     void Awake()
     {
         _SpriteRenderer = GetComponent(typeof(SpriteRenderer)) as SpriteRenderer;
+        _AudioSource = GetComponent(typeof(AudioSource)) as AudioSource;
     }
 
     void Start()
     {
-        _Amount = Random.Range(0, 5);
+        _Amount = Random.Range(1, 7);
+        Invoke("SetToCollectable", 1.0f);
+    }
+
+    void SetToCollectable()
+    {
+        _bIsCollectable = true;
     }
 
     void OnTriggerEnter2D(Collider2D Other)
     {
-        switch(Other.tag)
+        if (_bIsCollectable)
         {
-            case "Projectile":
-                GameManager.Instance.AddCoin(_Amount);
+            if(Other.CompareTag("Projectile"))
+            {
                 Collected();
-                break;
+                GameManager.Instance.AddCoin(_Amount);
+            }
         }
     }
 
     void Collected()
     {
+        _bIsCollectable = false;
+        _AudioSource.Play();
         StartCoroutine("DestroyProcess");
     }
 
@@ -44,14 +61,14 @@ public class Coin : MonoBehaviour
     {
         while(true)
         {
-            _ElasedTime += Timer.Instance.DeltaTime;
-            if(_ElasedTime >= _DestroyTime )
+            _ElasedTime += Time.deltaTime;
+            if(_ElasedTime >= _DestroyTime)
             {
                 Destroy(gameObject);
             }
             else
             {
-                float FadeOutRatio = 1.0f - Mathf.Clamp01((_ElasedTime / _DestroyTime));
+                float FadeOutRatio = Mathf.Lerp(1.0f, 0.0f, (_ElasedTime / _DestroyTime));
                 Color SpriteColor = _SpriteRenderer.color;
                 SpriteColor.a = FadeOutRatio;
                 _SpriteRenderer.color = SpriteColor;
