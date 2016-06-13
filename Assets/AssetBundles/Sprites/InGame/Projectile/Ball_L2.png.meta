@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 418a01f6b7d24fb4ca356a5652a03367
-timeCreated: 1464973633
+guid: c4cdc85f0e1d8ad4aa509f97b48c0d02
+timeCreated: 1465469189
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -51,7 +51,7 @@ TextureImporter:
   spriteSheet:
     sprites: []
     outline: []
-  spritePackingTag: InGameObject
+  spritePackingTag: Ball
   userData: 
   assetBundleName: 
   assetBundleVariant: 

@@ -7,7 +7,7 @@ public class Rotator : MonoBehaviour {
 
     private float _Angle = 0.0f;
 
-    void Start()
+    void Awake()
     {
         StartCoroutine("Rotate");
     }

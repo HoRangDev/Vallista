@@ -9,16 +9,10 @@ public class ShoppingItems : MonoBehaviour
     [SerializeField]
     private Sprite[] _Sprites = new Sprite[3];
 
-	// Use this for initialization
 	void Start ()
     {
         Refresh();
 	}
-
-    public void UpdateSprite()
-    {
-        Refresh();
-    }
 
     public void OnClick()
     {

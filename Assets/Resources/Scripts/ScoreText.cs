@@ -6,8 +6,7 @@ public class ScoreText : MonoBehaviour
 {
     private Text _Text = null;
 
-	// Use this for initialization
-	void Start ()
+	void Awake ()
     {
         _Text = GetComponent<Text>();
         _Text.text = PlayerPrefs.GetInt("Score", 0).ToString();

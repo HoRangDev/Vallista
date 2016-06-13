@@ -10,14 +10,14 @@ namespace ParkJunHo
         static SceneComponent instance = null;
         private Dictionary<string, int> _SceneDic = new Dictionary<string, int>();
 
-        void Start()
+        void Awake()
         {
             if(_SceneDic.Count == 0)
             {
                 _SceneDic.Add("LogoScene", 0);
                 _SceneDic.Add("TitleScene", 1);
                 _SceneDic.Add("TutorialScene", 2);
-                _SceneDic.Add("GameScene", 3);
+                _SceneDic.Add("InGameScene", 3);
                 _SceneDic.Add("ResultScene", 4);
             }
         }
@@ -34,7 +34,7 @@ namespace ParkJunHo
                 if (instance == null)
                 {
                     instance = new GameObject("SceneComponent", new System.Type[] { typeof(SceneComponent) }).GetComponent<SceneComponent>();
-                    instance.Start();
+                    instance.Awake();
                 }
 
                 return instance;

@@ -45,7 +45,7 @@ namespace ParkJunHo
                     }
                     else
                     {
-                        changer._Scene = "GameScene";
+                        changer._Scene = "InGameScene";
                         break;
                     }
                 }

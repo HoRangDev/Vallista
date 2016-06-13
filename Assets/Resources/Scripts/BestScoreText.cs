@@ -4,8 +4,7 @@ using UnityEngine.UI;
 
 public class BestScoreText : MonoBehaviour {
     
-	// Use this for initialization
-	void Start ()
+	void Awake ()
     {
         GetComponent<Text>().text = PlayerPrefs.GetInt("BestScore", 0).ToString();
 	}

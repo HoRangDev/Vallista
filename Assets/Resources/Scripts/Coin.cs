@@ -19,7 +19,16 @@ public class Coin : MonoBehaviour
     private float _ElasedTime;
 
     [SerializeField]
+    private float _ActiveDelay = 1.0f;
+
+    [SerializeField]
     private float _DestroyTime = 1.0f;
+
+    [SerializeField]
+    private int _AmountMin = 12;
+
+    [SerializeField]
+    private int _AmountMax = 20;
 
     void Awake()
     {
@@ -29,8 +38,8 @@ public class Coin : MonoBehaviour
 
     void Start()
     {
-        _Amount = Random.Range(1, 7);
-        Invoke("SetToCollectable", 1.0f);
+        _Amount = Random.Range(_AmountMin, _AmountMax);
+        Invoke("SetToCollectable", _ActiveDelay);
     }
 
     void SetToCollectable()
@@ -68,7 +77,7 @@ public class Coin : MonoBehaviour
             }
             else
             {
-                float FadeOutRatio = Mathf.Lerp(1.0f, 0.0f, (_ElasedTime / _DestroyTime));
+                float FadeOutRatio = Mathf.Lerp(1.0f, 0.0f, (_ElasedTime / (_DestroyTime * 0.5f)));
                 Color SpriteColor = _SpriteRenderer.color;
                 SpriteColor.a = FadeOutRatio;
                 _SpriteRenderer.color = SpriteColor;

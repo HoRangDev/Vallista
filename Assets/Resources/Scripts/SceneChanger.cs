@@ -9,7 +9,6 @@ namespace ParkJunHo
         public string _Scene = "";
         public bool _bIsStartOnChange = true;
 
-        // Use this for initialization
         void Start()
         {
             if (_bIsStartOnChange)

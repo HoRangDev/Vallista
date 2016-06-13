@@ -29,15 +29,26 @@ public class Monster : MonoBehaviour
     private float _DestroyTime;
 
     private bool _IsDead;
+    public bool IsDead { get { return _IsDead; } }
 
     [SerializeField]
     private Object _CoinPrefab;
 
     [SerializeField]
     private Transform _HPBarTransform;
+    
+    private BoxCollider2D _Collider;
+
+    [SerializeField]
+    private float _KnockBackDist;
+
+    [SerializeField]
+    private float _KnockBackTime;
+    private float _KnockBackElasedTime = 0.0f;
 
     void Awake()
     {
+        _Collider = GetComponent(typeof(BoxCollider2D)) as BoxCollider2D;
         _IsDead = false;
         _CurrentHealth = _StartHealth;
         _SpriteRenderer = GetComponent(typeof(SpriteRenderer)) as SpriteRenderer;
@@ -71,13 +82,16 @@ public class Monster : MonoBehaviour
                     if (TargetProjectile.IsValid)
                     {
                         _CurrentHealth -= TargetProjectile.Damage;
-                        TargetProjectile.Destroy();
+                        TargetProjectile.MonsterHit();
+                        TargetProjectile.Destroy(true);
                         _AudioSource.Play();
                         _Animator.SetBool("IsAttacked", true);
                         StopCoroutine("Movement");
+                        StartCoroutine("KnockBack");
 
                         if (_CurrentHealth <= 0)
                         {
+                            _Collider.enabled = false;
                             _HPBarTransform.gameObject.SetActive(false);
                             Dead();
                         }
@@ -107,6 +121,26 @@ public class Monster : MonoBehaviour
     void Attacked()
     {
         Invoke("SetToMove", _ShockDelay);
+    }
+
+    IEnumerator KnockBack()
+    {
+        while(true)
+        {
+            _KnockBackElasedTime += Timer.Instance.DeltaTime;
+            if(_KnockBackElasedTime >= _KnockBackTime)
+            {
+                _KnockBackElasedTime = 0.0f;
+                StopCoroutine("KnockBack");
+            }
+            else
+            {
+                Vector3 Pos = transform.position;
+                Pos.y += (Timer.Instance.DeltaTime * _KnockBackDist);
+                transform.position = Pos;
+            }
+            yield return null;
+        }
     }
 
     void DropCoin()

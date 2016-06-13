@@ -11,7 +11,9 @@ public class Projectile : MonoBehaviour
     private SpriteRenderer _SpriteRenderer;
     private BoxCollider2D _Collider;
     private Transform _Transform;
+
     private AudioSource _AudioSource;
+
     [SerializeField]
     private AudioSource _SubAudioSource;
 
@@ -41,8 +43,10 @@ public class Projectile : MonoBehaviour
     private float _DestroyTime;
     private float _ElasedTime;
 
-    private bool _bIsValid;
+    private bool _bIsValid = true;
     public bool IsValid { get { return _bIsValid; } }
+
+    private uint _WallCount = 0;
 
     void Awake()
     {
@@ -81,7 +85,8 @@ public class Projectile : MonoBehaviour
             _ElasedTime += Timer.Instance.DeltaTime;
             if (_ElasedTime >= _DestroyTime)
             {
-                Destroy(gameObject);
+                StopAllCoroutines();
+               GameObject.Destroy(gameObject);
             }
             else
             {
@@ -99,25 +104,39 @@ public class Projectile : MonoBehaviour
     {
         if (Other.gameObject.CompareTag("Wall"))
         {
-            _SoundEffectIndex = Mathf.Min(_SoundEffectIndex + 1, _WallCollisionSoundEffects.Count - 1);
-            _AudioSource.clip = _WallCollisionSoundEffects[_SoundEffectIndex];
-            _AudioSource.Play();
-            _SpriteRenderer.sprite = _LevelSpriteList[Mathf.Clamp(_SoundEffectIndex, 0, 2)];
-            _DirectionVector.x *= -1.0f;
-            _CurrentDamage = Mathf.Clamp(_CurrentDamage * 2, _StartDamage, _MaxDamage);
-        }
-        else if(Other.gameObject.CompareTag("Monster"))
-        {
-            _Collider.enabled = false;
-            _SubAudioSource.clip = _HitSoundEffect;
-            _SubAudioSource.Play();
+            if (_WallCount >= 4)
+            {
+                Destroy(false);
+            }
+            else
+            {
+                ++_WallCount;
+                _SoundEffectIndex = Mathf.Min(_SoundEffectIndex + 1, _WallCollisionSoundEffects.Count - 1);
+                _AudioSource.clip = _WallCollisionSoundEffects[_SoundEffectIndex];
+                _AudioSource.Play();
+                _SpriteRenderer.sprite = _LevelSpriteList[Mathf.Clamp(_SoundEffectIndex, 0, 2)];
+                _DirectionVector.x *= -1.0f;
+                _CurrentDamage = Mathf.Clamp(_CurrentDamage * 2, _StartDamage, _MaxDamage);
+
+            }
         }
     }
 
-    public void Destroy()
+    public void MonsterHit()
+    {
+        _Collider.enabled = false;
+        _SubAudioSource.clip = _HitSoundEffect;
+        _SubAudioSource.Play();
+    }
+
+    public void Destroy(bool IsStopMovement)
     {
         _bIsValid = false;
-        StopCoroutine("Movement");
+
+        if (IsStopMovement)
+        {
+            StopCoroutine("Movement");
+        }
         StartCoroutine("DestroyProcess");
     }
 }

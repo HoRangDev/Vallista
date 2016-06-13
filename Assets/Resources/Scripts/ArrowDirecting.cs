@@ -11,17 +11,14 @@ public class ArrowDirecting : MonoBehaviour
         sprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
         sprite.enabled = false;
 	}
-	
-	void Update ()
+
+    public void SetEnable(bool bIsEnable)
     {
-	    if(GameManager.Instance.IsOnTouch)
-        {
-            sprite.enabled = true;
-            transform.localRotation = Quaternion.Euler(0, 0, 90 + GameManager.Instance.ProjectileAimAngle);
-        }
-        else
-        {
-            sprite.enabled = false;
-        }
-	}
+        sprite.enabled = bIsEnable;
+    }
+
+    public void UpdateDirect()
+    {
+        transform.localRotation = Quaternion.Euler(0, 0, 90 + GameManager.Instance.ProjectileAimAngle);
+    }
 }

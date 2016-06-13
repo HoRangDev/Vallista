@@ -37,6 +37,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private int _NeedScoreForLevelup;
 
+    [SerializeField]
+    ArrowDirecting _ArrowDirect;
+
     void Awake()
     {
         _ManagerInstance = this;
@@ -70,26 +73,23 @@ public class GameManager : MonoBehaviour
                     switch (CurrentTouch.phase)
                     {
                         case TouchPhase.Began:
-                            _TouchBeganPosition = CurrentTouch.position;
+                            _ArrowDirect.SetEnable(true);
                             _bIsOnTouch = true;
+                            _TouchBeganPosition = CurrentTouch.position;
                             break;
 
                         case TouchPhase.Moved:
                             Vector2 MovedPosition = CurrentTouch.position;
-                            if (_TouchBeganPosition.y > MovedPosition.y)
-                            {
-                                Vector2 MovedDeltaPosition = MovedPosition - _TouchBeganPosition;
-                                _ProjectileAimAngle = Mathf.Atan2(MovedDeltaPosition.y, MovedDeltaPosition.x) * Mathf.Rad2Deg;
-                            }
+                            Vector2 MovedDeltaPosition = MovedPosition - _TouchBeganPosition;
+                            _ProjectileAimAngle = Mathf.Atan2(MovedDeltaPosition.y, MovedDeltaPosition.x) * Mathf.Rad2Deg;
+                            _ArrowDirect.UpdateDirect();
                             break;
 
-
-                        case TouchPhase.Stationary:
-                            _bIsOnTouch = true;
-                            break;
 
                         case TouchPhase.Ended:
                         case TouchPhase.Canceled:
+                            _ArrowDirect.SetEnable(false);
+                            _bIsOnTouch = false;
                             Vector2 TouchEndPosition = CurrentTouch.position;
                             Vector2 DeltaTouchPosition = -(TouchEndPosition - _TouchBeganPosition);
                             DeltaTouchPosition.Normalize();
@@ -104,7 +104,6 @@ public class GameManager : MonoBehaviour
                                 Invoke("SpawnProjectile", _ProjectileRespawnDelay);
                             }
 
-                            _bIsOnTouch = false;
                             break;
                     }
                 }
