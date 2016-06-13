@@ -3,7 +3,7 @@
 Please Dont publish this on Any App Store..
 
 # License
-Copyright (c) (2016) (Yang Kyowon)
+Copyright (c) (2016) (Yang Kyowon, Park Junho)
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
